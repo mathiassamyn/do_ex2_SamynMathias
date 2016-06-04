@@ -27,7 +27,7 @@ Vagrant.configure(2) do |config|
 	    node.vm.hostname = "www#{i}.dev"
             node.vm.network :private_network, ip: "192.168.2.3#{i}"
             node.vm.network :forwarded_port, guest: 22, host: 2222, id: "ssh", disabled: true
-            node.vm.network :forwarded_port, guest: 22, host: 333#{i}, auto_correct: true
+            node.vm.network :forwarded_port, guest: 22, host: "333#{i}", auto_correct: true
 	end
      end
 

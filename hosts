@@ -1,19 +1,24 @@
 [www1]
-192.168.2.2
+www1
 
 [www2]
-192.168.2.4
+www2
 
 [webservers:children]
 www1
 www2
 
 [mgr]
-localhost
+mgr
+
+[lb]
+lb
+
 
 [all:children]
 webservers
 mgr
+lb
 
 [all:vars]
 ansible_connection=ssh 
