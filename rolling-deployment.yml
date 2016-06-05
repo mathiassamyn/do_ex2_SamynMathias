@@ -1,30 +1,20 @@
----
-
-# common
-- hosts: all
-  sudo: yes
-  gather_facts: no
-
-  tasks:
-      - name: Install nginx.
-        apt: name={{ item }} state=present update_cache=yes
-        with_items:
-          - nginx
-
-      - name: Stop Nginx for now.
-        service: name=nginx state=stopped enabled=yes
-
-# webservers
 - hosts: webservers
   sudo: yes
+  serial: 1
+
+  pre_tasks:
+      - name: Disable server in HAProxy.
+        shell: echo "disable server opdrachtAnsible/{{ inventory_hostname }}" | socat stdio /var/lib/haproxy/stats
+        delegate_to: lb
 
   tasks:
-      - name: Install Node and apache.
+      - name: Install Node, Nginx, npm and apache.
         apt: name={{ item }} state=present update_cache=yes
         with_items:
           - nodejs
           - apache2
           - npm
+          - nginx
 
       - name: Install Express.
         npm: name=express global=true
@@ -50,26 +40,7 @@
       - name: restart nginx
         service: name=nginx state=restarted
 
-# loadbalancer
-- hosts: lb
-  sudo: yes
-
-  tasks:
-      - name: Install HAProxy and socat.
-        apt: name={{ item }} state=present update_cache=yes
-        with_items:
-          - haproxy
-          - socat
-
-      - name: enable haproxy
-        lineinfile: dest=/etc/default/haproxy regexp="^ENABLED" line="ENABLED=1"
-        notify: restart haproxy 
-
-      - name: deploy haproxy config
-        template: src=templates/haproxy.cfg.j2 dest=/etc/haproxy/haproxy.cfg
-        notify: restart haproxy
-
-  handlers:
-      - name: restart haproxy
-        service: name=haproxy state=restarted	
-
+  post_tasks:
+      - name: Enable server in HAProxy.
+        shell: echo "enable server opdrachtAnsible/{{ inventory_hostname }}" | socat stdio /var/lib/haproxy/stats
+        delegate_to: lb
