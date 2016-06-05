@@ -8,19 +8,16 @@ www2
 www1
 www2
 
-[mgr]
-mgr
-
 [lb]
 lb
 
-
 [all:children]
 webservers
-mgr
 lb
 
 [all:vars]
 ansible_connection=ssh 
 ansible_ssh_user=vagrant 
 ansible_ssh_pass=vagrant
+#necessary because I couldn't ssh into the webservers or the loadbalancer using the playbook
+ansible_ssh_common_args='-o StrictHostKeyChecking=no'

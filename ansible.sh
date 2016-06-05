@@ -15,5 +15,8 @@ rm /home/vagrant/.ssh/known_hosts
 ssh-keyscan lb www1 www2 mgr >> /home/vagrant/.ssh/known_hosts
 chown vagrant:vagrant /home/vagrant/.ssh/known_hosts
 
+#ansible-playbook /vagrant/addSshKey.yml
+ansible-playbook /vagrant/provisioning.yml
+
 
 
